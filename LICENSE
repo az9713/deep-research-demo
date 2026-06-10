@@ -1,0 +1,38 @@
+MIT License
+
+Copyright (c) 2026 Critical-Minerals Supercycle Research (showcase project)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---------------------------------------------------------------------------
+SCOPE NOTE
+
+The MIT license above covers ONLY the original work in this repository: the
+engineered prompt, the analysis and valuation reports, the method write-up,
+and the documentation.
+
+It does NOT cover the underlying source material. The analysis is derived from
+a third-party public talk — Dan Dreyfus, "The Future of Critical Minerals"
+(All-In), https://www.youtube.com/watch?v=xTO1aQ_m44I — which remains the
+property of its original rights holders. That talk's transcript is NOT
+redistributed in this repository; refer to the linked video.
+
+NOT FINANCIAL ADVICE. The investment analysis in this repository is a
+demonstration of a research methodology, not a recommendation to buy or sell
+any security. Do your own due diligence.

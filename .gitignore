@@ -1,0 +1,21 @@
+# ---- Raw research scratch / third-party page captures ----
+# These were saved during research; they are not part of the showcase and may
+# contain third-party copyrighted content. Kept locally, never published.
+*.html
+*.htm
+/etn.txt
+
+# Raw session transcript (contains personal info) — never publish
+/.ignore/
+
+# Source transcripts are NOT redistributed — refer to the linked YouTube video
+/sources/
+
+# ---- OS / editor cruft ----
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.vscode/
+.idea/
