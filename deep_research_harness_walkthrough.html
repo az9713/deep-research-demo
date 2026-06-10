@@ -93,6 +93,58 @@ exposes a few primitives to it:</p>
 script, persists a per-run copy to disk (<code>deep-research-&lt;runId&gt;.js</code>), runs the body with <code>args</code>
 injected, streams <code>phase()</code>/<code>log()</code> output to the UI, and returns the script's final <code>return</code> value.</p>
 
+<h2>1a. Design principles — why <em>these</em> primitives, and why so few?</h2>
+<div class="callout">
+  <strong>The unifying idea:</strong> the script is deterministic JavaScript; the agents are non-deterministic LLMs.
+  The primitives are precisely the <strong>seam</strong> between them — just enough to spawn stochastic work, compose it
+  concurrently with correct join semantics, convert its output back to typed data, and observe/bound it. Everything else is borrowed from the host language.
+</div>
+<div class="grid2">
+  <div class="card">
+    <h3>1 · One irreducible verb</h3>
+    <p style="margin:0"><code>agent()</code> is the only primitive that <em>does</em> anything — it spawns a worker. Everything else composes, feeds, bounds, or observes agent calls. One "verb," a few "connectives."</p>
+  </div>
+  <div class="card">
+    <h3>2 · Borrow the host language</h3>
+    <p style="margin:0">No <code>sequence()</code>, <code>if()</code>, <code>loop()</code>, <code>map()</code> — JavaScript already has those. The set adds <em>only what JS lacks</em>: spawning agents and scheduling them. This is <em>why</em> it is small.</p>
+  </div>
+  <div class="card">
+    <h3>3 · Two join semantics</h3>
+    <p style="margin:0"><code>parallel()</code> = <strong>barrier / fan-in</strong> (wait for all — for dedup, ranking, synthesis). <code>pipeline()</code> = <strong>no barrier / streaming</strong> (each item flows independently — for throughput). Duals that span concurrent composition.</p>
+  </div>
+  <div class="card">
+    <h3>4 · Composition, not enumeration</h3>
+    <p style="margin:0">A few orthogonal operations that compose cleanly beat a big catalogue (the Unix-pipe / combinator bet). <code>retry</code> = a loop; <code>map-reduce</code> = <code>pipeline</code> + a final <code>parallel</code>; <code>race</code> = compose + first-resolve. So they are left out.</p>
+  </div>
+</div>
+<p style="margin-top:16px"><strong>Separate concerns onto distinct planes</strong> — each primitive owns one concern, no overlap:</p>
+<table>
+  <tr><th>Plane</th><th>Primitive(s)</th><th>Concern</th></tr>
+  <tr><td>Compute</td><td><code>agent</code> (+ host control flow)</td><td>do the work</td></tr>
+  <tr><td>Concurrency</td><td><code>parallel</code>, <code>pipeline</code></td><td>compose; join semantics; concurrency caps; error isolation; resume</td></tr>
+  <tr><td>Input</td><td><code>args</code></td><td>the parameter</td></tr>
+  <tr><td>Limits</td><td><code>budget</code></td><td>resource envelope</td></tr>
+  <tr><td>Observability</td><td><code>phase</code>, <code>log</code></td><td>progress to the human (pure side-effect)</td></tr>
+  <tr><td>Nesting</td><td><code>workflow</code></td><td>compose whole workflows</td></tr>
+</table>
+<p style="margin-top:6px">Why schema validation lives on <code>agent()</code>: it converts fuzzy model output into typed data the deterministic layer can branch on — the seam in action.</p>
+
+<h3 style="color:var(--accent2);margin-top:22px">Is the set complete / exhaustive?</h3>
+<p>Not in a formal closed-algebra sense — you <em>can</em> add primitives (<code>workflow</code> and <code>budget</code> already sit beyond the core three). The honest claim is narrower: <strong>it is a minimal sufficient basis under a stated philosophy.</strong> The criteria that define "complete" here:</p>
+<table>
+  <tr><th>Criterion</th><th>What it decides</th></tr>
+  <tr><td><strong>Inclusion — irreducibility</strong></td><td>Keep a primitive only if it can't be rebuilt from the others + host language. <code>agent</code>, <code>parallel</code>/<code>pipeline</code> (you can't get concurrency caps, error→<code>null</code> isolation, progress, resume from raw <code>Promise.all</code>), <code>args</code>/<code>budget</code>/<code>phase</code>/<code>log</code> all pass.</td></tr>
+  <tr><td><strong>Exclusion — derivability</strong></td><td>If a candidate is expressible by composing existing primitives + JS, it stays out (<code>sequence</code>, <code>if</code>, <code>loop</code>, <code>map</code>, <code>retry</code>, <code>race</code>). This stops the set from growing.</td></tr>
+  <tr><td><strong>No host-language duplication</strong></td><td>Sequencing / branching / iteration / transforms are JS's job, not the harness's.</td></tr>
+  <tr><td><strong>Concurrency-join completeness</strong></td><td>The barrier / no-barrier pair covers both ends of the synchronization axis — any concurrent composition can be assembled.</td></tr>
+  <tr><td><strong>Computational adequacy</strong></td><td><code>agent</code> + host control flow expresses any DAG of agent calls (orchestration-complete); <code>parallel</code>/<code>pipeline</code> add concurrency <em>correctness</em>, not raw power.</td></tr>
+</table>
+<div class="callout">
+  The set is "complete" the way a <strong>basis</strong> is — small, orthogonal, spanning — not the way an exhaustive feature list is.
+  <strong>This harness is the proof by demonstration:</strong> a branching, fault-tolerant, resumable, 109-agent pipeline expressed entirely in
+  <code>agent</code> + <code>pipeline</code> + <code>parallel</code> + <code>phase</code>/<code>log</code> + <code>args</code>.
+</div>
+
 <h2>2. How <span class="mono" style="color:var(--accent2)">args</span> flows in and through</h2>
 <div class="grid2">
   <div class="card">

@@ -26,6 +26,47 @@ A **dynamic workflow** is a JavaScript program that *orchestrates subagents dete
 
 `deep-research-harness.js` uses `agent`, `pipeline`, `parallel`, `phase`, `log`, and `args`.
 
+### 1.1a Design principles — why *these* primitives, and why so few?
+
+The primitive set is deliberately tiny. The reasoning behind it:
+
+**1. One irreducible unit of work.** `agent()` is the only primitive that *does* anything — it spawns a stochastic worker (an LLM subagent). Everything else exists to compose, feed, bound, or observe agent calls. Remove `agent()` and there is no workflow; remove anything else and you can still (more clumsily) compute. The set has exactly **one "verb" and a few "connectives."**
+
+**2. Borrow the host language; don't reinvent it.** Notice what is *not* a primitive: there is no `sequence()`, `if()`, `loop()`, `map()`, `filter()`, or `variable()`. JavaScript already provides sequencing (`await`), branching (`if`), iteration (`for`/`while`), and data transforms (`map`/`filter`/`reduce`). Re-implementing those as primitives would duplicate the host language and bloat the API for nothing. The set adds *only what JS lacks*: spawning model agents and scheduling them concurrently. **This single decision is why the set is small.**
+
+**3. Two concurrency operators, because there are exactly two join semantics.** Concurrent composition has one fundamental axis — do you *synchronize* (wait for everything) or *stream* (let each item flow)?
+- `parallel()` = **barrier / fan-in**: run N things, wait for all. Needed whenever a later step requires the *complete* set — dedup across all sources, rank the full claim pool, synthesize from all findings.
+- `pipeline()` = **no barrier / streaming dataflow**: each item runs through all stages independently (item A can be in stage 3 while B is still in stage 1). Needed when items are independent and you want throughput — wall-clock becomes the slowest *single chain*, not the sum of slowest-per-stage.
+
+These two are duals; together they **span** the space of concurrent composition. More exotic patterns (work-stealing, partial barriers, races) are rare and can be *built* from these two plus host control flow — so they aren't primitives.
+
+**4. Power from composition, not enumeration (the combinator philosophy).** Like Unix pipes or functional combinators, the design bets that a few orthogonal operations that compose cleanly beat a large catalogue of special-purpose ones. A bigger API is more to learn, more to misuse, more to keep coherent. Anything derivable from existing primitives + JS is left out on purpose: `retry` = a loop; `map-reduce` = `pipeline` then a final `parallel`/`agent`; `race` = compose + first-resolve.
+
+**5. Separate concerns onto distinct planes** — each primitive owns one concern, with no overlap:
+
+| Plane | Primitive(s) | Concern |
+|---|---|---|
+| Compute | `agent` (+ host control flow) | do the work |
+| Concurrency | `parallel`, `pipeline` | compose work; correct join semantics; concurrency caps; error isolation; resume |
+| Input | `args` | the parameter |
+| Limits | `budget` | resource envelope |
+| Observability | `phase`, `log` | progress to the human (pure side-effect) |
+| Nesting | `workflow` | compose whole workflows |
+
+**6. The unifying idea: deterministic control around stochastic work.** The script is deterministic JavaScript; the agents are non-deterministic LLMs. The primitives are precisely the **seam** between them. That is also why **schema validation lives on `agent()`** — it converts fuzzy model output into typed data the deterministic layer can branch on. The primitive set's whole job is to let deterministic code (a) spawn stochastic work, (b) compose it concurrently with correct join semantics, (c) turn its output back into typed data, and (d) observe and bound it — and to *borrow everything else from the host language*.
+
+### 1.1b Is the set complete / exhaustive?
+
+Not in a formal closed-algebra sense — you *can* add primitives (indeed `workflow` and `budget` already sit beyond the core three), and nothing forbids a future `race()` or `retry()`. The honest, useful claim is narrower: **it is a minimal sufficient basis under a stated philosophy.** The criteria that define "complete" here:
+
+1. **Inclusion test — irreducibility.** A primitive earns its place only if it *cannot* be reconstructed from the others plus the host language. `agent` (can't fake an LLM call), `parallel`/`pipeline` (can't get the scheduler's concurrency cap, error→`null` isolation, progress, and resume from raw `Promise.all`), and `args`/`budget`/`phase`/`log` (each a distinct runtime capability) all pass.
+2. **Exclusion test — derivability.** If a candidate is expressible by composing existing primitives + JS, it stays out (`sequence`, `if`, `loop`, `map`, `retry`, `map-reduce`, `race`). This is what stops the set from growing.
+3. **No host-language duplication.** Sequencing / branching / iteration / data-transforms are JavaScript's job, not the harness's.
+4. **Concurrency-join completeness.** The barrier (`parallel`) / no-barrier (`pipeline`) pair covers both ends of the synchronization axis, so *any* concurrent composition can be assembled.
+5. **Computational adequacy.** `agent` + host control flow can express any DAG of agent calls (it is orchestration-complete); `parallel`/`pipeline` add *concurrency and scheduling correctness*, not raw expressive power. So the set is sufficient to express any orchestration, and minimal in that removing any member loses a capability not recoverable from the rest.
+
+In short, the set is "complete" the way a **basis** is complete — small, orthogonal, spanning — not the way an exhaustive feature list is. **This harness is the proof by demonstration:** a non-trivial, branching, fault-tolerant, resumable, 109-agent pipeline expressed entirely in `agent` + `pipeline` + `parallel` + `phase`/`log` + `args`.
+
 ### 1.2 The `meta` block makes it a *registered* workflow
 
 The file begins with `export const meta = { name: 'deep-research', … }` (lines 1–6). Three things matter:
