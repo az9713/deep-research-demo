@@ -6,6 +6,8 @@ The source is Dan Dreyfus's critical-minerals / commodity-supercycle presentatio
 
 > **This repo is a methodology demonstration, NOT financial advice.** See [`LICENSE`](LICENSE). Do your own due diligence.
 
+**▶ Live walkthrough (GitHub Pages):** **https://az9713.github.io/deep-research-demo/** — the `deep-research-harness.js` engine, rendered line-by-line in the browser.
+
 **Last updated:** 2026-06-10
 
 ---
@@ -16,7 +18,7 @@ The source is Dan Dreyfus's critical-minerals / commodity-supercycle presentatio
 |---|---|
 | **Understand how it was built** (the point of the repo) | **[DEVELOPMENT_JOURNEY.md](DEVELOPMENT_JOURNEY.md)** |
 | **Understand how `/deep-research` works** | [deep_research_explained.md](deep_research_explained.md) |
-| **Understand the engine, line by line** | [deep_research_harness_explained.md](deep_research_harness_explained.md) + [deep_research_harness_walkthrough.html](deep_research_harness_walkthrough.html) |
+| **Understand the engine, line by line** | [deep_research_harness_explained.md](deep_research_harness_explained.md) + walkthrough ([live](https://az9713.github.io/deep-research-demo/deep_research_harness_walkthrough.html) · [source](deep_research_harness_walkthrough.html)) |
 | **See the investment output** | [investment_opportunity_analysis.md](investment_opportunity_analysis.md) → [investment_valuation_pass2.md](investment_valuation_pass2.md) |
 | **Reuse the prompt on your own topic** | [investment_opportunity_prompt.md](investment_opportunity_prompt.md) |
 
@@ -33,7 +35,7 @@ The source is Dan Dreyfus's critical-minerals / commodity-supercycle presentatio
 | 4 | **[deep_research_explained.md](deep_research_explained.md)** | Method write-up | Phases, agent math, both runs documented, when-to-use guide |
 | 5 | **[deep-research-harness.js](deep-research-harness.js)** | The actual engine (~350 lines JS) | The real dynamic-workflow script behind every run |
 | 6 | **[deep_research_harness_explained.md](deep_research_harness_explained.md)** | Engine explainer | How Claude Code invokes it; how `args` flows in and through |
-| 7 | **[deep_research_harness_walkthrough.html](deep_research_harness_walkthrough.html)** | Line-by-line walkthrough (open in browser) | Full copyable source + an annotation beside nearly every line |
+| 7 | **[deep_research_harness_walkthrough.html](deep_research_harness_walkthrough.html)** ([live](https://az9713.github.io/deep-research-demo/deep_research_harness_walkthrough.html)) | Line-by-line walkthrough (open in browser) | Full copyable source + an annotation beside nearly every line |
 
 **Source material:** Dan Dreyfus — ["The Future of Critical Minerals" (All-In)](https://www.youtube.com/watch?v=xTO1aQ_m44I) *(the talk's transcript was used locally during research but is **not redistributed** in this repo)*
 
