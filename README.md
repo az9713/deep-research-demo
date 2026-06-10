@@ -16,6 +16,7 @@ The source is Dan Dreyfus's critical-minerals / commodity-supercycle presentatio
 |---|---|
 | **Understand how it was built** (the point of the repo) | **[DEVELOPMENT_JOURNEY.md](DEVELOPMENT_JOURNEY.md)** |
 | **Understand how `/deep-research` works** | [deep_research_explained.md](deep_research_explained.md) |
+| **Understand the engine, line by line** | [deep_research_harness_explained.md](deep_research_harness_explained.md) + [deep_research_harness_walkthrough.html](deep_research_harness_walkthrough.html) |
 | **See the investment output** | [investment_opportunity_analysis.md](investment_opportunity_analysis.md) → [investment_valuation_pass2.md](investment_valuation_pass2.md) |
 | **Reuse the prompt on your own topic** | [investment_opportunity_prompt.md](investment_opportunity_prompt.md) |
 
@@ -30,6 +31,9 @@ The source is Dan Dreyfus's critical-minerals / commodity-supercycle presentatio
 | 2 | **[investment_opportunity_analysis.md](investment_opportunity_analysis.md)** | **Run 1** — thesis & opportunities | Bottleneck map, claims audit, 5-tier matrix (~25 names), top-5 ranked, what-to-avoid |
 | 3 | **[investment_valuation_pass2.md](investment_valuation_pass2.md)** | **Run 2** — valuation & entry | Valuation matrix, per-name entry framework, best-entry ranking, priced-for-perfection callout |
 | 4 | **[deep_research_explained.md](deep_research_explained.md)** | Method write-up | Phases, agent math, both runs documented, when-to-use guide |
+| 5 | **[deep-research-harness.js](deep-research-harness.js)** | The actual engine (~350 lines JS) | The real dynamic-workflow script behind every run |
+| 6 | **[deep_research_harness_explained.md](deep_research_harness_explained.md)** | Engine explainer | How Claude Code invokes it; how `args` flows in and through |
+| 7 | **[deep_research_harness_walkthrough.html](deep_research_harness_walkthrough.html)** | Line-by-line walkthrough (open in browser) | Full copyable source + an annotation beside nearly every line |
 
 **Source material:** Dan Dreyfus — ["The Future of Critical Minerals" (All-In)](https://www.youtube.com/watch?v=xTO1aQ_m44I) *(the talk's transcript was used locally during research but is **not redistributed** in this repo)*
 
@@ -98,6 +102,9 @@ Use it when *being wrong is expensive* and *the truth is spread across many sour
 ├── investment_opportunity_prompt.md   ← the engineered brief
 ├── investment_opportunity_analysis.md ← Run 1: thesis & opportunities
 ├── investment_valuation_pass2.md      ← Run 2: valuation & entry
+├── deep-research-harness.js           ← the engine: the actual /deep-research workflow script
+├── deep_research_harness_explained.md ← how the engine is invoked + how args flows in
+├── deep_research_harness_walkthrough.html ← line-by-line annotated source (open in browser)
 ├── LICENSE                            ← MIT (original work in this repo)
 └── .gitignore
 ```
